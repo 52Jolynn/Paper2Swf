@@ -4,12 +4,6 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 
-import com.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
-import com.artofsolving.jodconverter.DocumentConverter;
-import com.artofsolving.jodconverter.DocumentFormat;
-import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
-import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
-import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
 import com.jacob.com.Dispatch;
@@ -26,104 +20,94 @@ import com.jacob.com.Variant;
 public class Office2PdfUtils {
 	private final static Logger log = Logger.getLogger(Office2PdfUtils.class);
 
-	private static int openOfficeListenerPort = 8100;
-	private static int TRANSFERSUCCESS = 1;// 转换成功
-	private static int TRANSFERFAILURE = 0;// 转换失败
+	private static int TRANSFER_SUCCEED = 1;// 转换成功
+	private static int TRANSFER_FAILURE = 0;// 转换失败
 
 	// MS
-	private static int WORDDONOTSAVECHANGES = 0;// WORD不保存待定的变更
-	private static int WORDFORMATPDF = 17;// WORD PDF格式
-	private static int DISPLAYALERTS = 0;// 不显示对话框
-	private static int EXCELFORMATPDF = 0;// EXCEl PDF格式
-	private static int PPTFORMATPDF = 32; // PPT PDF格式
-	private static int PPTREADONLYMODE = 1; // PPT以只读模式打开
-	private static int WDREVISIONSVIEWFINAL = 0;// 审阅最终模式
+	private static int WORD_DO_NOT_SAVE_CHANGES = 0;// WORD不保存待定的变更
+	private static int WORD_PDF_FORMAT_CODE = 17;// WORD PDF格式
+	private static int DISPLAY_ALERTS = 0;// 不显示对话框
+	private static int EXCEL_PDF_FORMAT_CODE = 0;// EXCEl PDF格式
+	private static int PPT_PDF_FORMAT_CODE = 32; // PPT PDF格式
+	private static int PPT_OPEN_READ_ONLY_MODE = 1; // PPT以只读模式打开
+	private static int WORD_FINAL_REVISIONS_VIEW = 0;// 审阅最终模式
 
 	// WPS
-	private static int WPSDONOTSAVECHANGES = 0;// WPS不保存待定的变更
-	private static int DPSREADONLYMODE = 1; // DPS以只读模式打开
-	private static boolean ETDONOTSAVECHANGES = false;// ET不保存待定的变更
-
-	// OpenOffice Service不是线程安全的
-	private static OpenOfficeConnection conn = null;
+	private static int WPS_DO_NOT_SAVE_CHANGES = 0;// WPS不保存待定的变更
+	private static int DPS_OPEN_READ_ONLY_MODE = 1; // DPS以只读模式打开
+	private static boolean ET_DO_NOT_SAVE_CHANGES = false;// ET不保存待定的变更
 
 	/**
 	 * 将doc、docx转换成pdf
 	 * 
-	 * @param srcPath
+	 * @param srcFilePath
 	 *            源文件路径
-	 * 
-	 * 
-	 * 
-	 * @param destPath
+	 * @param destFilePath
 	 *            目的文件路径
 	 * @return 返回0表示转换失败，1表示成功
 	 * 
 	 * @see MS VBA
 	 */
-	public static int doc2pdf(String srcPath, String destPath) {
-		File file = new File(srcPath);
+	public static int doc2pdf(String srcFilePath, String destFilePath) {
+		File file = new File(srcFilePath);
 		if (file.exists()) {
 			ComThread.InitMTA();
 			ActiveXComponent word = null;
 			try {
 				word = new ActiveXComponent("Word.Application");
 				word.setProperty("Visible", false);
-				word.setProperty("DisplayAlerts", DISPLAYALERTS);
+				word.setProperty("DisplayAlerts", DISPLAY_ALERTS);
 
 				Dispatch docs = word.getProperty("Documents").toDispatch();
 
-				log.info("使用MS Word打开文档..." + srcPath);
-				Dispatch doc = Dispatch.call(docs, "Open", srcPath, true, true)
-						.toDispatch();
+				log.info("使用MS Word打开文档..." + srcFilePath);
+				Dispatch doc = Dispatch.call(docs, "Open", srcFilePath, true,
+						true).toDispatch();
 
 				Dispatch activeWindow = Dispatch.get(doc, "ActiveWindow")
 						.toDispatch();
 				Dispatch view = Dispatch.get(activeWindow, "View").toDispatch();
 				Dispatch.put(view, "ShowRevisionsAndComments", false);
 				Dispatch.put(view, "RevisionsView", new Variant(
-						WDREVISIONSVIEWFINAL));
+						WORD_FINAL_REVISIONS_VIEW));
 
-				log.info("转换文档到PDF..." + destPath);
-				File toFile = new File(destPath);
+				log.info("转换文档到PDF..." + destFilePath);
+				File toFile = new File(destFilePath);
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(doc, "SaveAs", destPath, WORDFORMATPDF);
+				Dispatch.call(doc, "SaveAs", destFilePath, WORD_PDF_FORMAT_CODE);
 				Dispatch.call(doc, "Close", false);
 				log.info("转换完成");
-				return TRANSFERSUCCESS;
+				return TRANSFER_SUCCEED;
 			} catch (Exception e) {
 				log.info("调用MS Word转换失败:" + e.getMessage());
 			} finally {
 				if (word != null) {
 					log.info("退出Word");
-					word.invoke("Quit", WORDDONOTSAVECHANGES);
+					word.invoke("Quit", WORD_DO_NOT_SAVE_CHANGES);
 				}
 				ComThread.Release();
 			}
 		}
 		log.info("文档不存在...");
 
-		return TRANSFERFAILURE;
+		return TRANSFER_FAILURE;
 	}
 
 	/**
 	 * 将xls、xlsx转换成pdf
 	 * 
-	 * @param srcPath
+	 * @param srcFilePath
 	 *            源文件路径
-	 * 
-	 * 
-	 * 
-	 * @param destPath
+	 * @param destFilePath
 	 *            目的文件路径
 	 * @return 返回0表示转换失败，1表示成功
 	 * 
 	 * @see MS VBA
 	 */
-	public static int xls2pdf(String srcPath, String destPath) {
-		File file = new File(srcPath);
+	public static int xls2pdf(String srcFilePath, String destFilePath) {
+		File file = new File(srcFilePath);
 		if (file.exists()) {
 			ComThread.InitMTA();
 			ActiveXComponent excel = null;
@@ -132,17 +116,17 @@ public class Office2PdfUtils {
 				excel.setProperty("Visible", new Variant(false));
 				Dispatch workbooks = excel.getProperty("Workbooks")
 						.toDispatch();
-				log.info("使用MS Excel打开文档..." + srcPath);
-				Dispatch workbook = Dispatch.call(workbooks, "Open", srcPath,
-						false, true).toDispatch();
-				log.info("转换文档到PDF..." + destPath);
+				log.info("使用MS Excel打开文档..." + srcFilePath);
+				Dispatch workbook = Dispatch.call(workbooks, "Open",
+						srcFilePath, false, true).toDispatch();
+				log.info("转换文档到PDF..." + destFilePath);
 
-				File toFile = new File(destPath);
+				File toFile = new File(destFilePath);
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(workbook, "ExportAsFixedFormat", EXCELFORMATPDF,
-						destPath);
+				Dispatch.call(workbook, "ExportAsFixedFormat",
+						EXCEL_PDF_FORMAT_CODE, destFilePath);
 				Dispatch.call(workbook, "Close", false);
 			} catch (Exception e) {
 				log.error("调用MS Excel转换失败:" + e.getMessage());
@@ -155,25 +139,22 @@ public class Office2PdfUtils {
 			}
 		}
 		log.info("文档不存在...");
-		return TRANSFERFAILURE;
+		return TRANSFER_FAILURE;
 	}
 
 	/**
 	 * 将ppt、pptx转换成pdf
 	 * 
-	 * @param srcPath
+	 * @param srcFilePath
 	 *            源文件路径
-	 * 
-	 * 
-	 * 
-	 * @param destPath
+	 * @param destFilePath
 	 *            目的文件路径
 	 * @return 返回0表示转换失败，1表示成功
 	 * 
 	 * @see MS VBA
 	 */
-	public static int ppt2pdf(String srcPath, String destPath) {
-		File file = new File(srcPath);
+	public static int ppt2pdf(String srcFilePath, String destFilePath) {
+		File file = new File(srcFilePath);
 		if (file.exists()) {
 			ComThread.InitMTA();
 			ActiveXComponent ppt = null;
@@ -183,21 +164,22 @@ public class Office2PdfUtils {
 				Dispatch presentations = ppt.getProperty("Presentations")
 						.toDispatch();
 
-				log.info("使用MS Powerpoint打开文档..." + srcPath);
+				log.info("使用MS Powerpoint打开文档..." + srcFilePath);
 				Dispatch presentation = Dispatch.call(presentations, "Open",
-						new Variant(srcPath), new Variant(PPTREADONLYMODE))
-						.toDispatch();
+						new Variant(srcFilePath),
+						new Variant(PPT_OPEN_READ_ONLY_MODE)).toDispatch();
 
-				log.info("转换文档到PDF..." + destPath);
-				File toFile = new File(destPath);
+				log.info("转换文档到PDF..." + destFilePath);
+				File toFile = new File(destFilePath);
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(presentation, "SaveAs", new Variant(destPath),
-						new Variant(PPTFORMATPDF));
+				Dispatch.call(presentation, "SaveAs",
+						new Variant(destFilePath), new Variant(
+								PPT_PDF_FORMAT_CODE));
 				Dispatch.call(presentation, "Close");
 				log.info("转换完成");
-				return TRANSFERSUCCESS;
+				return TRANSFER_SUCCEED;
 			} catch (Exception e) {
 				log.info("调用MS Powerpoint转换失败:" + e.getMessage());
 			} finally {
@@ -209,25 +191,22 @@ public class Office2PdfUtils {
 			}
 		}
 		log.info("文档不存在...");
-		return TRANSFERFAILURE;
+		return TRANSFER_FAILURE;
 	}
 
 	/**
 	 * 将wps转换成pdf
 	 * 
-	 * @param srcPath
+	 * @param srcFilePath
 	 *            源文件路径
-	 * 
-	 * 
-	 * 
-	 * @param destPath
+	 * @param destFilePath
 	 *            目的文件路径
 	 * @return 返回0表示转换失败，1表示成功
 	 * 
 	 * @see WPS VBA
 	 */
-	public static int wps2pdf(String srcPath, String destPath) {
-		File file = new File(srcPath);
+	public static int wps2pdf(String srcFilePath, String destFilePath) {
+		File file = new File(srcFilePath);
 		if (file.exists()) {
 			ComThread.InitMTA();
 			ActiveXComponent wps = null;
@@ -235,51 +214,49 @@ public class Office2PdfUtils {
 				wps = new ActiveXComponent("WPS.Application");
 				wps.setProperty("Visible", false);
 				Dispatch docs = wps.getProperty("Documents").toDispatch();
-				log.info("调用WPS文字打开文档..." + srcPath);
+				log.info("调用WPS文字打开文档..." + srcFilePath);
 				Dispatch doc = Dispatch.call(docs, "Open",
-						new Variant(srcPath), new Variant(false),
+						new Variant(srcFilePath), new Variant(false),
 						new Variant(true)).toDispatch();
 
-				log.info("转换文档到PDF..." + destPath);
-				File toFile = new File(destPath);
+				log.info("转换文档到PDF..." + destFilePath);
+				File toFile = new File(destFilePath);
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(doc, "ExportPdf", new Variant(destPath));
-				Dispatch.call(doc, "Close", new Variant(WPSDONOTSAVECHANGES));
+				Dispatch.call(doc, "ExportPdf", new Variant(destFilePath));
+				Dispatch.call(doc, "Close",
+						new Variant(WPS_DO_NOT_SAVE_CHANGES));
 				log.info("转换完成");
-				return TRANSFERSUCCESS;
+				return TRANSFER_SUCCEED;
 			} catch (Exception e) {
 				log.info("调用WPS文字转换失败:" + e.getMessage());
 			} finally {
 				if (wps != null) {
 					log.info("退出WPS文字");
-					wps.invoke("Quit", new Variant(WPSDONOTSAVECHANGES));
+					wps.invoke("Quit", new Variant(WPS_DO_NOT_SAVE_CHANGES));
 				}
 				ComThread.Release();
 			}
 		}
 		log.info("文档不存在...");
 
-		return TRANSFERFAILURE;
+		return TRANSFER_FAILURE;
 	}
 
 	/**
 	 * 将dps转换成pdf
 	 * 
-	 * @param srcPath
+	 * @param srcFilePath
 	 *            源文件路径
-	 * 
-	 * 
-	 * 
-	 * @param destPath
+	 * @param destFilePath
 	 *            目的文件路径
 	 * @return 返回0表示转换失败，1表示成功
 	 * 
 	 * @see WPS VBA
 	 */
-	public static int dps2pdf(String srcPath, String destPath) {
-		File file = new File(srcPath);
+	public static int dps2pdf(String srcFilePath, String destFilePath) {
+		File file = new File(srcFilePath);
 		if (file.exists()) {
 			ComThread.InitMTA();
 			ActiveXComponent dps = null;
@@ -288,20 +265,21 @@ public class Office2PdfUtils {
 				Dispatch presentations = dps.getProperty("Presentations")
 						.toDispatch();
 
-				log.info("使用WPS演示打开文档..." + srcPath);
+				log.info("使用WPS演示打开文档..." + srcFilePath);
 				Dispatch presentation = Dispatch.call(presentations, "Open",
-						new Variant(srcPath), new Variant(null),
-						new Variant(DPSREADONLYMODE)).toDispatch();
+						new Variant(srcFilePath), new Variant(null),
+						new Variant(DPS_OPEN_READ_ONLY_MODE)).toDispatch();
 
-				log.info("转换文档到PDF..." + destPath);
-				File toFile = new File(destPath);
+				log.info("转换文档到PDF..." + destFilePath);
+				File toFile = new File(destFilePath);
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(presentation, "ExportPdf", new Variant(destPath));
+				Dispatch.call(presentation, "ExportPdf", new Variant(
+						destFilePath));
 				Dispatch.call(presentation, "Close");
 				log.info("转换完成");
-				return TRANSFERSUCCESS;
+				return TRANSFER_SUCCEED;
 			} catch (Exception e) {
 				log.info("调用WPS演示转换失败:" + e.getMessage());
 			} finally {
@@ -314,25 +292,22 @@ public class Office2PdfUtils {
 		}
 		log.info("文档不存在...");
 
-		return TRANSFERFAILURE;
+		return TRANSFER_FAILURE;
 	}
 
 	/**
 	 * 将et转换成pdf
 	 * 
-	 * @param srcPath
+	 * @param srcFilePath
 	 *            源文件路径
-	 * 
-	 * 
-	 * 
-	 * @param destPath
+	 * @param destFilePath
 	 *            目的文件路径
 	 * @return 返回0表示转换失败，1表示成功
 	 * 
 	 * @see WPS VBA
 	 */
-	public static int et2pdf(String srcPath, String destPath) {
-		File file = new File(srcPath);
+	public static int et2pdf(String srcFilePath, String destFilePath) {
+		File file = new File(srcFilePath);
 		if (file.exists()) {
 			ComThread.InitMTA();
 			ActiveXComponent et = null;
@@ -340,20 +315,20 @@ public class Office2PdfUtils {
 				et = new ActiveXComponent("ET.Application");
 				et.setProperty("Visible", false);
 				Dispatch workbooks = et.getProperty("Workbooks").toDispatch();
-				log.info("调用WPS表格打开文档..." + srcPath);
+				log.info("调用WPS表格打开文档..." + srcFilePath);
 				Dispatch workbook = Dispatch.call(workbooks, "Open",
-						new Variant(srcPath)).toDispatch();
+						new Variant(srcFilePath)).toDispatch();
 
-				log.info("转换文档到PDF..." + destPath);
-				File toFile = new File(destPath);
+				log.info("转换文档到PDF..." + destFilePath);
+				File toFile = new File(destFilePath);
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(workbook, "ExportPdf", new Variant(destPath));
-				Dispatch.call(workbook, "Close",
-						new Variant(ETDONOTSAVECHANGES));
+				Dispatch.call(workbook, "ExportPdf", new Variant(destFilePath));
+				Dispatch.call(workbook, "Close", new Variant(
+						ET_DO_NOT_SAVE_CHANGES));
 				log.info("转换完成");
-				return TRANSFERSUCCESS;
+				return TRANSFER_SUCCEED;
 			} catch (Exception e) {
 				log.info("调用WPS表格转换失败:" + e.getMessage());
 			} finally {
@@ -366,60 +341,6 @@ public class Office2PdfUtils {
 			}
 		}
 		log.info("文档不存在...");
-		return TRANSFERFAILURE;
-	}
-
-	/**
-	 * 使用openoffice进行转换
-	 * 
-	 * @param srcPath
-	 *            源文件路径
-	 * 
-	 * @param tgtPath
-	 *            目标文件路径
-	 * @return 返回0表示转换失败，1表示成功
-	 */
-	public static int office2pdf(String srcPath, String tgtPath) {
-		conn = new SocketOpenOfficeConnection(openOfficeListenerPort);
-
-		synchronized (conn) {
-			try {
-				File srcFile = new File(srcPath);
-				File tgtFile = new File(tgtPath);
-				DefaultDocumentFormatRegistry formatRegistry = new DefaultDocumentFormatRegistry();
-				DocumentFormat pdf = formatRegistry
-						.getFormatByFileExtension("pdf");
-				conn.connect();
-				DocumentConverter converter = new OpenOfficeDocumentConverter(
-						conn);
-				converter.convert(srcFile, tgtFile, pdf);
-			} catch (Exception e) {
-				log.info("调用OpenOffice转换失败:" + e.getMessage());
-			} finally {
-				if (conn != null) {
-					conn.disconnect();
-					conn = null;
-				}
-			}
-		}
-		return TRANSFERFAILURE;
-	}
-
-	/**
-	 * 取得OpenOffice监听端口
-	 * 
-	 * @return
-	 */
-	public static int getOpenOfficeListenerPort() {
-		return openOfficeListenerPort;
-	}
-
-	/**
-	 * 设置OpenOffice监听端口
-	 * 
-	 * @param openOfficeListenerPort
-	 */
-	public static void setOpenOfficeListenerPort(int openOfficeListenerPort) {
-		Office2PdfUtils.openOfficeListenerPort = openOfficeListenerPort;
+		return TRANSFER_FAILURE;
 	}
 }
