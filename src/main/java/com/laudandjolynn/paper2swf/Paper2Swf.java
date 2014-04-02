@@ -14,19 +14,12 @@ public class Paper2Swf {
 	 * @param pdfFilePath
 	 * @param swfDir
 	 * @param swfFileName
-	 * @param background
 	 * @return
 	 */
 	public static int pdf2swf(String swftoolsFilePath, String languageDir,
-			String pdfFilePath, String swfDir, String swfFileName,
-			boolean background) {
-		if (background) {
-			return 0;
-		} else {
-			SwfConverter converter = new SwfConverter(swftoolsFilePath,
-					languageDir);
-			return converter.convertPdfToSwf(pdfFilePath, swfDir, swfFileName);
-		}
+			String pdfFilePath, String swfDir, String swfFileName) {
+		SwfConverter converter = new SwfConverter(swftoolsFilePath, languageDir);
+		return converter.convertPdfToSwf(pdfFilePath, swfDir, swfFileName);
 	}
 
 	/**
@@ -38,16 +31,15 @@ public class Paper2Swf {
 	 * @param pdfFilePath
 	 * @param swfDir
 	 * @param swfFileName
-	 * @param background
 	 * @return
 	 */
 	public static int office2swf_jacob(String swftoolsFilePath,
 			String languageDir, String srcFilePath, String pdfFilePath,
-			String swfDir, String swfFileName, boolean background) {
+			String swfDir, String swfFileName) {
 		PdfConverter pdfConverter = new JacobConverter();
 		pdfConverter.convert(srcFilePath, pdfFilePath);
 		return pdf2swf(swftoolsFilePath, languageDir, pdfFilePath, swfDir,
-				swfFileName, background);
+				swfFileName);
 	}
 
 	/**
@@ -61,16 +53,14 @@ public class Paper2Swf {
 	 * @param pdfFilePath
 	 * @param swfDir
 	 * @param swfFileName
-	 * @param background
 	 * @return
 	 */
 	public static int office2swf_openoffice(String host, int port,
 			String swftoolsFilePath, String languageDir, String srcFilePath,
-			String pdfFilePath, String swfDir, String swfFileName,
-			boolean background) {
+			String pdfFilePath, String swfDir, String swfFileName) {
 		PdfConverter pdfConverter = new OpenOfficeConverter(host, port);
 		pdfConverter.convert(srcFilePath, pdfFilePath);
 		return pdf2swf(swftoolsFilePath, languageDir, pdfFilePath, swfDir,
-				swfFileName, background);
+				swfFileName);
 	}
 }
