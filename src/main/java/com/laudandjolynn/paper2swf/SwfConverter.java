@@ -48,7 +48,7 @@ public class SwfConverter {
 	 *            swf文件名
 	 * @return 返回生成的swf的页数，-1表示转换失败
 	 */
-	public int convertPdfToSwf(String pdfFilePath, String swfDir,
+	public int convertPdf2Swf(String pdfFilePath, String swfDir,
 			String swfFileName) {
 		File swftoolsFile = new File(this.swftoolsFilePath);
 		File languageDir = new File(this.languageDir);

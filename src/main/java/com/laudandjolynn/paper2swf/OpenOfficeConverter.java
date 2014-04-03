@@ -24,8 +24,6 @@ import com.laudandjolynn.paper2swf.utils.SocketOpenOfficeConnectionFactory;
 public class OpenOfficeConverter implements PdfConverter {
 	private final static Logger logger = LoggerFactory
 			.getLogger(OpenOfficeConverter.class);
-	private String host;
-	private int port;
 	private GenericObjectPool<SocketOpenOfficeConnection> gop = null;
 
 	public OpenOfficeConverter() {
@@ -33,28 +31,17 @@ public class OpenOfficeConverter implements PdfConverter {
 				SocketOpenOfficeConnection.DEFAULT_PORT);
 	}
 
+	/**
+	 * 
+	 * @param host
+	 *            openoffice服务地址
+	 * @param port
+	 *            openoffice服务端口
+	 */
 	public OpenOfficeConverter(String host, int port) {
-		this.host = host;
-		this.port = port;
 		SocketOpenOfficeConnectionFactory factory = new SocketOpenOfficeConnectionFactory(
 				host, port);
 		this.gop = new GenericObjectPool<SocketOpenOfficeConnection>(factory);
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	@Override
@@ -71,7 +58,7 @@ public class OpenOfficeConverter implements PdfConverter {
 			converter.convert(srcFile, tgtFile, pdf);
 			return 1;
 		} catch (Exception e) {
-			logger.error("调用OpenOffice转换失败.", e);
+			logger.error("call OpenOffice fail.", e);
 		} finally {
 			if (conn != null) {
 				try {

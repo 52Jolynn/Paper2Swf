@@ -12,11 +12,8 @@ import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConne
  */
 public class SocketOpenOfficeConnectionFactory extends
 		BasePoolableObjectFactory<SocketOpenOfficeConnection> {
-	private String host = SocketOpenOfficeConnection.DEFAULT_HOST;
-	private int port = SocketOpenOfficeConnection.DEFAULT_PORT;
-
-	public SocketOpenOfficeConnectionFactory() {
-	}
+	private String host = null;
+	private int port;
 
 	/**
 	 * 构造函数

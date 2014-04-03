@@ -7,7 +7,12 @@ package com.laudandjolynn.paper2swf;
  * @copyright: www.laudandjolynn.com
  */
 public class Paper2Swf {
+	public enum ConvertTech {
+		JACOB, OPEN_OFFICE
+	}
+
 	/**
+	 * pdf to swf, sync
 	 * 
 	 * @param swftoolsFilePath
 	 * @param languageDir
@@ -19,11 +24,11 @@ public class Paper2Swf {
 	public static int pdf2swf(String swftoolsFilePath, String languageDir,
 			String pdfFilePath, String swfDir, String swfFileName) {
 		SwfConverter converter = new SwfConverter(swftoolsFilePath, languageDir);
-		return converter.convertPdfToSwf(pdfFilePath, swfDir, swfFileName);
+		return converter.convertPdf2Swf(pdfFilePath, swfDir, swfFileName);
 	}
 
 	/**
-	 * 使用jacob将office转成pdf，然后再转swf
+	 * 使用jacob将office转成pdf, 然后再转swf, sync
 	 * 
 	 * @param swftoolsFilePath
 	 * @param languageDir
@@ -43,23 +48,23 @@ public class Paper2Swf {
 	}
 
 	/**
-	 * 使用openoffice将office转成pdf，然后再转swf
+	 * 使用openoffice将office转成pdf, 然后再转swf, sync
 	 * 
 	 * @param host
 	 * @param port
 	 * @param swftoolsFilePath
 	 * @param languageDir
-	 * @param srcFilePath
+	 * @param officeFilePath
 	 * @param pdfFilePath
 	 * @param swfDir
 	 * @param swfFileName
 	 * @return
 	 */
 	public static int office2swf_openoffice(String host, int port,
-			String swftoolsFilePath, String languageDir, String srcFilePath,
+			String swftoolsFilePath, String languageDir, String officeFilePath,
 			String pdfFilePath, String swfDir, String swfFileName) {
 		PdfConverter pdfConverter = new OpenOfficeConverter(host, port);
-		pdfConverter.convert(srcFilePath, pdfFilePath);
+		pdfConverter.convert(officeFilePath, pdfFilePath);
 		return pdf2swf(swftoolsFilePath, languageDir, pdfFilePath, swfDir,
 				swfFileName);
 	}
