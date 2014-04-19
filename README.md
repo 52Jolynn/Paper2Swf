@@ -28,5 +28,6 @@ Office文档转pdf的实现方式有两种，一是使用com bridge，使用开�
 <li>若选用com bridge（即jacob）方式，需要安装MS Office 2007版本</li>
 <li>若使用WPS，默认安装的程序是不带VBA的，需要自行安装Microsoft Visual Basic for Application，然后才能使用。</li>
 <li>若选用OpenOffice方式，需要安装OpenOffice(推荐)</li>
+<li>若需要更好地支持异步转换，需要部署gearman</li>
 </ul>
 
