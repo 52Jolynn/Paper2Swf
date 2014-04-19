@@ -12,9 +12,8 @@ convert office to pdf and pdf to swf.
 <li>OpenOffice office site: https://www.openoffice.org/</li>
 <li>WPS office site: http://www.wps.cn/ </li>
 <li>swftools: http://www.swftools.org/download.html </li>
-<li>xpdf: ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.03.tar.gz <br/>xpdf的作用是增加对语言的支持，比如中文，可从网上搜索资料配置xpdf。
-</li>
-<ul>
+<li>xpdf: ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.03.tar.gz xpdf的作用是增加对语言的支持，比如中文，可从网上搜索资料配置xpdf。</li>
+</ul>
 
 运行环境：<br/>
 <ul>
