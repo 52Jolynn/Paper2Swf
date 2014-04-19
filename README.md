@@ -7,12 +7,14 @@ convert office to pdf and pdf to swf.
 <li>支持pdf转swf.</li>
 </ul>
 
-Jacob office site: http://danadler.com/jacob/ <br/>
-OpenOffice office site: https://www.openoffice.org/ <br/>
-WPS office site: http://www.wps.cn/ <br/>
-swftools: http://www.swftools.org/download.html <br/>
-xpdf: ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.03.tar.gz <br/>
-xpdf的作用是增加对语言的支持，比如中文，可从网上搜索资料配置xpdf。<br/>
+<ul>
+<li>Jacob office site: http://danadler.com/jacob/</li>
+<li>OpenOffice office site: https://www.openoffice.org/</li>
+<li>WPS office site: http://www.wps.cn/ </li>
+<li>swftools: http://www.swftools.org/download.html </li>
+<li>xpdf: ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.03.tar.gz <br/>xpdf的作用是增加对语言的支持，比如中文，可从网上搜索资料配置xpdf。
+</li>
+<ul>
 
 运行环境：<br/>
 <ul>
