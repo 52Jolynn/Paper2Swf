@@ -8,6 +8,11 @@ convert office to pdf and pdf to swf.
 <li>支持pdf转swf.</li>
 </ul>
 
+<h2>主要实现思路</h2>
+若是Office文档转swf，需要先把Office文档转为pdf文档，然后再使用swftools将pdf转为swf。<br/>
+Office文档转pdf的实现方式有两种，一是使用com bridge，使用开源Jacob工具，调用Office或WPS的VBA接口，实现Office文档输出为pdf文档。二是使用OpenOffice、JODConvert将Office文档输出为pdf。<br/>
+本方案还尝试提供与gearman结合的实现方式，以更好地支持异步转换。
+
 <h2>参考资料</h2>
 <ul>
 <li>Jacob office site: http://danadler.com/jacob/</li>
