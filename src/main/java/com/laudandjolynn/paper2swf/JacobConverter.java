@@ -102,9 +102,10 @@ public class JacobConverter implements PdfConverter {
 
 				Dispatch docs = word.getProperty("Documents").toDispatch();
 
-				logger.info("open document with MS Word." + srcFilePath);
-				Dispatch doc = Dispatch.call(docs, "Open", srcFilePath, true,
-						true).toDispatch();
+				String absSrcFilePath = file.getAbsolutePath();
+				logger.info("open document with MS Word." + absSrcFilePath);
+				Dispatch doc = Dispatch.call(docs, "Open", absSrcFilePath,
+						true, true).toDispatch();
 
 				Dispatch activeWindow = Dispatch.get(doc, "ActiveWindow")
 						.toDispatch();
@@ -113,12 +114,17 @@ public class JacobConverter implements PdfConverter {
 				Dispatch.put(view, "RevisionsView", new Variant(
 						WORD_FINAL_REVISIONS_VIEW));
 
-				logger.info("convert pdf docuemnt to " + destFilePath);
 				File toFile = new File(destFilePath);
+				if (toFile.isDirectory()) {
+
+				}
+				String absDestFilePath = toFile.getAbsolutePath();
+				logger.info("convert pdf docuemnt to " + absDestFilePath);
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(doc, "SaveAs", destFilePath, WORD_PDF_FORMAT_CODE);
+				Dispatch.call(doc, "SaveAs", absDestFilePath,
+						WORD_PDF_FORMAT_CODE);
 				Dispatch.call(doc, "Close", false);
 				logger.info("convert doc to pdf complete.");
 				return TRANSFER_SUCCEED;
@@ -158,17 +164,21 @@ public class JacobConverter implements PdfConverter {
 				excel.setProperty("Visible", new Variant(false));
 				Dispatch workbooks = excel.getProperty("Workbooks")
 						.toDispatch();
-				logger.info("open document with MS Excel " + srcFilePath);
+
+				String absSrcFilePath = file.getAbsolutePath();
+				logger.info("open document with MS Excel " + absSrcFilePath);
 				Dispatch workbook = Dispatch.call(workbooks, "Open",
-						srcFilePath, false, true).toDispatch();
-				logger.info("convert pdf document to " + destFilePath);
+						absSrcFilePath, false, true).toDispatch();
 
 				File toFile = new File(destFilePath);
-				if (toFile.exists()) {
-					toFile.delete();
+				String absDestFilePath = toFile.getAbsolutePath();
+				logger.info("convert pdf document to " + absDestFilePath);
+				if (toFile.isDirectory()) {
+					logger.error("destination path must be a file path.");
+					return 0;
 				}
 				Dispatch.call(workbook, "ExportAsFixedFormat",
-						EXCEL_PDF_FORMAT_CODE, destFilePath);
+						EXCEL_PDF_FORMAT_CODE, absDestFilePath);
 				Dispatch.call(workbook, "Close", false);
 				logger.info("convert xls to pdf complete.");
 			} catch (Exception e) {
@@ -207,19 +217,22 @@ public class JacobConverter implements PdfConverter {
 				Dispatch presentations = ppt.getProperty("Presentations")
 						.toDispatch();
 
-				logger.info("open document with MS Powerpoint " + srcFilePath);
+				String absSrcFilePath = file.getAbsolutePath();
+				logger.info("open document with MS Powerpoint "
+						+ absSrcFilePath);
 				Dispatch presentation = Dispatch.call(presentations, "Open",
-						new Variant(srcFilePath),
+						new Variant(absSrcFilePath),
 						new Variant(PPT_OPEN_READ_ONLY_MODE)).toDispatch();
 
-				logger.info("convert pdf document to " + destFilePath);
 				File toFile = new File(destFilePath);
-				if (toFile.exists()) {
-					toFile.delete();
+				String absDestFilePath = toFile.getAbsolutePath();
+				logger.info("convert pdf document to " + absDestFilePath);
+				if (toFile.isDirectory()) {
+					logger.error("destination path must be a file path.");
+					return 0;
 				}
-				Dispatch.call(presentation, "SaveAs",
-						new Variant(destFilePath), new Variant(
-								PPT_PDF_FORMAT_CODE));
+				Dispatch.call(presentation, "SaveAs", new Variant(
+						absDestFilePath), new Variant(PPT_PDF_FORMAT_CODE));
 				Dispatch.call(presentation, "Close");
 				logger.info("convert ppt to pdf complete.");
 				return TRANSFER_SUCCEED;
@@ -256,18 +269,24 @@ public class JacobConverter implements PdfConverter {
 			try {
 				wps = new ActiveXComponent("WPS.Application");
 				wps.setProperty("Visible", false);
+				String absSrcFilePath = file.getAbsolutePath();
 				Dispatch docs = wps.getProperty("Documents").toDispatch();
-				logger.info("open document with WPS " + srcFilePath);
+				logger.info("open document with WPS " + absSrcFilePath);
 				Dispatch doc = Dispatch.call(docs, "Open",
-						new Variant(srcFilePath), new Variant(false),
+						new Variant(absSrcFilePath), new Variant(false),
 						new Variant(true)).toDispatch();
 
-				logger.info("convert pdf document to " + destFilePath);
 				File toFile = new File(destFilePath);
+				String absDestFilePath = toFile.getAbsolutePath();
+				logger.info("convert pdf document to " + absDestFilePath);
+				if (toFile.isDirectory()) {
+					logger.error("destination path must be a file path.");
+					return 0;
+				}
 				if (toFile.exists()) {
 					toFile.delete();
 				}
-				Dispatch.call(doc, "ExportPdf", new Variant(destFilePath));
+				Dispatch.call(doc, "ExportPdf", new Variant(absDestFilePath));
 				Dispatch.call(doc, "Close",
 						new Variant(WPS_DO_NOT_SAVE_CHANGES));
 				logger.info("convert wps to pdf complete.");
@@ -308,18 +327,21 @@ public class JacobConverter implements PdfConverter {
 				Dispatch presentations = dps.getProperty("Presentations")
 						.toDispatch();
 
-				logger.info("open document with WPS " + srcFilePath);
+				String absSrcFilePath = file.getAbsolutePath();
+				logger.info("open document with WPS " + absSrcFilePath);
 				Dispatch presentation = Dispatch.call(presentations, "Open",
-						new Variant(srcFilePath), new Variant(null),
+						new Variant(absSrcFilePath), new Variant(null),
 						new Variant(DPS_OPEN_READ_ONLY_MODE)).toDispatch();
 
-				logger.info("convert pdf document to " + destFilePath);
 				File toFile = new File(destFilePath);
-				if (toFile.exists()) {
-					toFile.delete();
+				String absDestFilePath = toFile.getAbsolutePath();
+				logger.info("convert pdf document to " + absDestFilePath);
+				if (toFile.isDirectory()) {
+					logger.error("destination path must be a file path.");
+					return 0;
 				}
 				Dispatch.call(presentation, "ExportPdf", new Variant(
-						destFilePath));
+						absDestFilePath));
 				Dispatch.call(presentation, "Close");
 				logger.info("convert dps to pdf complete.");
 				return TRANSFER_SUCCEED;
@@ -358,16 +380,21 @@ public class JacobConverter implements PdfConverter {
 				et = new ActiveXComponent("ET.Application");
 				et.setProperty("Visible", false);
 				Dispatch workbooks = et.getProperty("Workbooks").toDispatch();
-				logger.info("open document with WPS " + srcFilePath);
-				Dispatch workbook = Dispatch.call(workbooks, "Open",
-						new Variant(srcFilePath)).toDispatch();
 
-				logger.info("convert pdf document to " + destFilePath);
+				String absSrcFilePath = file.getAbsolutePath();
+				logger.info("open document with WPS " + absSrcFilePath);
+				Dispatch workbook = Dispatch.call(workbooks, "Open",
+						new Variant(absSrcFilePath)).toDispatch();
+
 				File toFile = new File(destFilePath);
-				if (toFile.exists()) {
-					toFile.delete();
+				String absDestFilePath = toFile.getAbsolutePath();
+				logger.info("convert pdf document to " + absDestFilePath);
+				if (toFile.isDirectory()) {
+					logger.error("destination path must be a file path.");
+					return 0;
 				}
-				Dispatch.call(workbook, "ExportPdf", new Variant(destFilePath));
+				Dispatch.call(workbook, "ExportPdf", new Variant(
+						absDestFilePath));
 				Dispatch.call(workbook, "Close", new Variant(
 						ET_DO_NOT_SAVE_CHANGES));
 				logger.info("convert et to pdf complete.");
@@ -379,7 +406,6 @@ public class JacobConverter implements PdfConverter {
 					logger.info("exit WPS.");
 					et.invoke("Quit");
 				}
-
 				ComThread.Release();
 			}
 		}

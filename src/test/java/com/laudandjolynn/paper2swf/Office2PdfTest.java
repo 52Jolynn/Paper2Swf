@@ -23,7 +23,26 @@ public class Office2PdfTest extends TestCase {
 		PdfConverter converter = new JacobConverter();
 		String srcFilePath = Pdf2SwfTest.class
 				.getResource("/TestConverter.wps").getPath();
-		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath();
+		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath()
+				+ "TestConverterWps.pdf";
+		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+	}
+
+	public void testEt2Pdf() {
+		PdfConverter converter = new JacobConverter();
+		String srcFilePath = Pdf2SwfTest.class.getResource("/TestConverter.et")
+				.getPath();
+		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath()
+				+ "TestConverterEt.pdf";
+		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+	}
+
+	public void testDps2Pdf() {
+		PdfConverter converter = new JacobConverter();
+		String srcFilePath = Pdf2SwfTest.class
+				.getResource("/TestConverter.dps").getPath();
+		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath()
+				+ "TestConverterDps.pdf";
 		assertEquals(1, converter.convert(srcFilePath, destFilePath));
 	}
 
@@ -31,15 +50,26 @@ public class Office2PdfTest extends TestCase {
 		PdfConverter converter = new JacobConverter();
 		String srcFilePath = Pdf2SwfTest.class
 				.getResource("/TestConverter.doc").getPath();
-		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath();
+		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath()
+				+ "TestConverterDoc.pdf";
 		assertEquals(1, converter.convert(srcFilePath, destFilePath));
 	}
 
-	public void testOpenOffice2Pdf() {
-		PdfConverter converter = new OpenOfficeConverter();
+	public void testXls2Pdf() {
+		PdfConverter converter = new JacobConverter();
 		String srcFilePath = Pdf2SwfTest.class
-				.getResource("/TestConverter.doc").getPath();
-		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath();
+				.getResource("/TestConverter.xls").getPath();
+		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath()
+				+ "TestConverterXls.pdf";
+		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+	}
+
+	public void testPpt2Pdf() {
+		PdfConverter converter = new JacobConverter();
+		String srcFilePath = Pdf2SwfTest.class
+				.getResource("/TestConverter.ppt").getPath();
+		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath()
+				+ "TestConverterPpt.pdf";
 		assertEquals(1, converter.convert(srcFilePath, destFilePath));
 	}
 }
