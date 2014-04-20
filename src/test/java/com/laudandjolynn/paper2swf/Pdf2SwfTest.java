@@ -19,5 +19,7 @@ import junit.framework.TestCase;
  * @copyright: www.laudandjolynn.com
  */
 public class Pdf2SwfTest extends TestCase {
-
+	public void testPdf2Swf() {
+		
+	}
 }

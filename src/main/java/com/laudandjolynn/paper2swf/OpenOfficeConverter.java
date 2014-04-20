@@ -36,6 +36,9 @@ public class OpenOfficeConverter implements PdfConverter {
 			.getLogger(OpenOfficeConverter.class);
 	private GenericObjectPool<SocketOpenOfficeConnection> gop = null;
 
+	/**
+	 * 默认构造函数，localhost, default port
+	 */
 	public OpenOfficeConverter() {
 		this(SocketOpenOfficeConnection.DEFAULT_HOST,
 				SocketOpenOfficeConnection.DEFAULT_PORT);

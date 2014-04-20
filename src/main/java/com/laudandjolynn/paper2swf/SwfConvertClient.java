@@ -186,6 +186,25 @@ public class SwfConvertClient {
 		client.submit(job);
 	}
 
+	/**
+	 * 
+	 * @param host
+	 *            openoffice服务地址
+	 * @param port
+	 *            openoffice服务端口
+	 * @param swftoolsFilePath
+	 *            swftools执行文件路径，包括文件名，比如c:\swftools\pdf2swf.exe
+	 * @param languageDir
+	 *            语言支持文件目录，比如c:\swftools\xpdf\
+	 * @param officeFilePath
+	 *            office文件路径
+	 * @param pdfFilePath
+	 *            PDF文件路径
+	 * @param swfDir
+	 *            swf文件存储目录
+	 * @param swfFileName
+	 *            swf文件名
+	 */
 	public void convertOffice2Swf_openoffice(String host, int port,
 			String swftoolsFilePath, String languageDir, String officeFilePath,
 			String pdfFilePath, String swfDir, String swfFileName) {
