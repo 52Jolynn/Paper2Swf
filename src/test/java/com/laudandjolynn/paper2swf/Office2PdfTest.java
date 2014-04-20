@@ -28,10 +28,6 @@ public class Office2PdfTest extends TestCase {
 		// jacob
 		PdfConverter converter = new JacobConverter();
 		assertEquals(1, converter.convert(srcFilePath, destFilePath));
-
-		// openoffice
-		converter = new OpenOfficeConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
 	}
 
 	public void testEt2Pdf() {
@@ -42,10 +38,6 @@ public class Office2PdfTest extends TestCase {
 
 		// jacob
 		PdfConverter converter = new JacobConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
-
-		// openoffice
-		converter = new OpenOfficeConverter();
 		assertEquals(1, converter.convert(srcFilePath, destFilePath));
 	}
 
@@ -58,10 +50,6 @@ public class Office2PdfTest extends TestCase {
 		// jacob
 		PdfConverter converter = new JacobConverter();
 		assertEquals(1, converter.convert(srcFilePath, destFilePath));
-
-		// openoffice
-		converter = new OpenOfficeConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
 	}
 
 	public void testDoc2Pdf() {
@@ -70,12 +58,12 @@ public class Office2PdfTest extends TestCase {
 		String destFilePath = Pdf2SwfTest.class.getResource("/").getPath()
 				+ "TestConverterDoc.pdf";
 		// jacob
-		PdfConverter converter = new JacobConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+		PdfConverter c1 = new JacobConverter();
+		assertEquals(1, c1.convert(srcFilePath, destFilePath));
 
 		// openoffice
-		converter = new OpenOfficeConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+		PdfConverter c2 = new OpenOfficeConverter();
+		assertEquals(1, c2.convert(srcFilePath, destFilePath));
 	}
 
 	public void testXls2Pdf() {
@@ -85,12 +73,12 @@ public class Office2PdfTest extends TestCase {
 				+ "TestConverterXls.pdf";
 
 		// jacob
-		PdfConverter converter = new JacobConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+		PdfConverter c1 = new JacobConverter();
+		assertEquals(1, c1.convert(srcFilePath, destFilePath));
 
 		// openoffice
-		converter = new OpenOfficeConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+		PdfConverter c2 = new OpenOfficeConverter();
+		assertEquals(1, c2.convert(srcFilePath, destFilePath));
 	}
 
 	public void testPpt2Pdf() {
@@ -100,11 +88,11 @@ public class Office2PdfTest extends TestCase {
 				+ "TestConverterPpt.pdf";
 
 		// jacob
-		PdfConverter converter = new JacobConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+		PdfConverter c1 = new JacobConverter();
+		assertEquals(1, c1.convert(srcFilePath, destFilePath));
 
 		// openoffice
-		converter = new OpenOfficeConverter();
-		assertEquals(1, converter.convert(srcFilePath, destFilePath));
+		PdfConverter c2 = new OpenOfficeConverter();
+		assertEquals(1, c2.convert(srcFilePath, destFilePath));
 	}
 }

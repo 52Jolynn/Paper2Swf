@@ -26,6 +26,12 @@ import com.laudandjolynn.paper2swf.utils.SocketOpenOfficeConnectionFactory;
 /**
  * open office转换器
  * 
+ * <pre>
+ * OpenOffice服务启动方法：
+ *  soffice -headless -accept="socket,host=127.0.0.1,port=8100;urp;" -nofirststartwizard
+ *  参考资料：http://www.artofsolving.com/node/10
+ * </pre>
+ * 
  * @author: Laud
  * @email: htd0324@gmail.com
  * @date: 2014年4月2日 下午8:47:27
@@ -63,7 +69,18 @@ public class OpenOfficeConverter implements PdfConverter {
 		try {
 			conn = gop.borrowObject();
 			File srcFile = new File(srcFilePath);
+			logger.info("open document with OpenOffice "
+					+ srcFile.getAbsolutePath());
+
 			File tgtFile = new File(destFilePath);
+			logger.info("convert pdf document to " + tgtFile.getAbsolutePath());
+			if (tgtFile.isDirectory()) {
+				logger.error("destination path must be a file path.");
+				return 0;
+			}
+			if (tgtFile.exists()) {
+				tgtFile.delete();
+			}
 			DefaultDocumentFormatRegistry formatRegistry = new DefaultDocumentFormatRegistry();
 			DocumentFormat pdf = formatRegistry.getFormatByFileExtension("pdf");
 			conn.connect();
