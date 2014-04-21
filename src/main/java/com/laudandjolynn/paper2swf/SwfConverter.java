@@ -43,6 +43,9 @@ public class SwfConverter {
 	 * @return
 	 */
 	public SwfConverter(String swftoolsFilePath, String languageDir) {
+		if (!swftoolsFilePath.endsWith(File.separator)) {
+			swftoolsFilePath += File.separator;
+		}
 		this.swftoolsFilePath = swftoolsFilePath;
 		this.languageDir = languageDir;
 	}
@@ -56,12 +59,15 @@ public class SwfConverter {
 	 *            目的swf存储目录
 	 * @param swfFileName
 	 *            swf文件名
+	 * @param pageing
+	 *            是否分页
 	 * @return 返回生成的swf的页数，-1表示转换失败
 	 */
-	public int convertPdf2Swf(String pdfFilePath, String swfDir,
-			String swfFileName) {
+	public int pdf2Swf(String pdfFilePath, String swfDir, String swfFileName,
+			boolean paging) {
 		File swftoolsFile = new File(this.swftoolsFilePath);
 		File languageDir = new File(this.languageDir);
+		File pdfFile = new File(pdfFilePath);
 
 		if (!swftoolsFile.exists()) {
 			log.error("can not find swftools.");
@@ -69,6 +75,10 @@ public class SwfConverter {
 		}
 		if (!languageDir.exists()) {
 			log.error("can not find xpdf directory path.");
+			return -1;
+		}
+		if (!pdfFile.exists()) {
+			log.error("can not find pdf file.");
 			return -1;
 		}
 
@@ -81,15 +91,18 @@ public class SwfConverter {
 		}
 
 		int index = swfFileName.lastIndexOf(".");
+		String absSwfToolsFilePath = swftoolsFile.getAbsolutePath()
+				+ File.separator;
+		String absLanguageDir = languageDir.getAbsolutePath();
+		String absPdfFilePath = pdfFile.getAbsolutePath();
+		String swfFileNameWithoutExt = swfFileName.substring(0, index);
+		String absSwfDir = tgtFile.getAbsolutePath() + File.separator;
 
-		String cmd = "\"" + swftoolsFilePath + "\\pdf2swf.exe\" \""
-				+ pdfFilePath + " -o " + swfDir
-				+ swfFileName.substring(0, index)
-				+ "%.swf\" -f -T 9 -t -s storeallcharacters";
-		cmd = "\"" + this.swftoolsFilePath + "\" \"" + pdfFilePath + "\" -o \""
-				+ swfDir + swfFileName.substring(0, index)
-				+ "%.swf\" -f -T 9 -t -s storeallcharacters -s languagedir=\""
-				+ this.languageDir + "\"";
+		String cmd = "\"" + absSwfToolsFilePath + "pdf2swf.exe\" \""
+				+ absPdfFilePath + "\" -o \"" + absSwfDir
+				+ swfFileNameWithoutExt + (paging ? "%" : "")
+				+ ".swf\" -f -T 9 -t -s storeallcharacters -s languagedir=\""
+				+ absLanguageDir + "\"";
 
 		log.info("execute cmd: " + cmd);
 
@@ -98,19 +111,22 @@ public class SwfConverter {
 			ProcessBuilder pb = new ProcessBuilder(cmd);
 			pb.redirectErrorStream(true);
 			Process process = pb.start();
-
-			String line = null;
 			int page = -1;
-			Pattern pattern = Pattern.compile(SWF_TOOLS_RESPONSE_REGEX);
-			Matcher matcher = null;
+			if (paging) {
+				String line = null;
+				Pattern pattern = Pattern.compile(SWF_TOOLS_RESPONSE_REGEX);
+				Matcher matcher = null;
 
-			br = new BufferedReader(new InputStreamReader(
-					process.getInputStream()));
-			while ((line = br.readLine()) != null) {
-				matcher = pattern.matcher(line);
-				if (matcher.matches()) {
-					page = Integer.valueOf(matcher.group(1));
+				br = new BufferedReader(new InputStreamReader(
+						process.getInputStream()));
+				while ((line = br.readLine()) != null) {
+					matcher = pattern.matcher(line);
+					if (matcher.matches()) {
+						page = Integer.valueOf(matcher.group(1));
+					}
 				}
+			} else {
+				page = 1;
 			}
 
 			process.waitFor();

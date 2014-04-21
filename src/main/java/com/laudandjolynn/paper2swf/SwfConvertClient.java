@@ -32,6 +32,13 @@ public class SwfConvertClient {
 		client.addJobServer(conn);
 	}
 
+	/**
+	 * 
+	 * @param host
+	 *            job server服务地址
+	 * @param port
+	 *            job server服务端口
+	 */
 	public SwfConvertClient(String host, int port) {
 		this(new GearmanNIOJobServerConnection(host, port));
 	}
@@ -48,9 +55,12 @@ public class SwfConvertClient {
 	 *            swf文件存储目录
 	 * @param swfFileName
 	 *            swf文件名
+	 * @param paging
+	 *            是否分页
 	 */
-	public void convertPdf2Swf(String swftoolsFilePath, String languageDir,
-			String pdfFilePath, String swfDir, String swfFileName) {
+	public void pdf2Swf(String swftoolsFilePath, String languageDir,
+			String pdfFilePath, String swfDir, String swfFileName,
+			boolean paging) {
 		byte[] swftoolsFilePathData = ByteUtils.toUTF8Bytes(swftoolsFilePath);
 		int swftoolsFilePathDataLen = swftoolsFilePathData.length;
 		byte[] languageDirData = ByteUtils.toUTF8Bytes(languageDir);
@@ -61,9 +71,13 @@ public class SwfConvertClient {
 		int swfDirDataLen = swfDirData.length;
 		byte[] swfFileNameData = ByteUtils.toUTF8Bytes(swfFileName);
 		int swfFileNameDataLen = swfFileNameData.length;
+		byte[] pagingData = paging ? ByteUtils.toBigEndian(1) : ByteUtils
+				.toBigEndian(0);
+		int pagingDataLen = pagingData.length;
 
 		int totalBytes = swftoolsFilePathDataLen + languageDirDataLen
-				+ pdfFilePathDataLen + swfDirDataLen + swfFileNameDataLen + 4;
+				+ pdfFilePathDataLen + swfDirDataLen + swfFileNameDataLen
+				+ pagingDataLen + 5;
 		byte[] data = new byte[totalBytes];
 		int offset = 0;
 		// swf tools file path
@@ -81,12 +95,19 @@ public class SwfConvertClient {
 		System.arraycopy(pdfFilePathData, 0, data, offset, pdfFilePathDataLen);
 		offset += pdfFilePathDataLen;
 		data[offset++] = '\0';
+
 		// swf dir
 		System.arraycopy(swfDirData, 0, data, offset, swfDirDataLen);
 		offset += swfDirDataLen;
 		data[offset++] = '\0';
+
 		// swf file name
 		System.arraycopy(swfFileNameData, 0, data, offset, swfFileNameDataLen);
+		offset += swfFileNameDataLen;
+		data[offset++] = '\0';
+
+		// paging
+		System.arraycopy(pagingData, 0, data, offset, pagingDataLen);
 
 		String function = Pdf2SwfConvertFunction.class.getCanonicalName();
 		String uniqueId = null;
@@ -105,25 +126,26 @@ public class SwfConvertClient {
 		}
 	}
 
-	private void convertOffice2Swf(String swftoolsFilePath, String languageDir,
-			String srcFilePath, String pdfFilePath, String swfDir,
-			String swfFileName, OpenOfficeConfig cfg) {
+	private void office2Swf(String swftoolsFilePath, String languageDir,
+			String srcFilePath, String swfDir, String swfFileName,
+			boolean paging, OpenOfficeConfig cfg) {
 		byte[] swftoolsFilePathData = ByteUtils.toUTF8Bytes(swftoolsFilePath);
 		int swftoolsFilePathDataLen = swftoolsFilePathData.length;
 		byte[] languageDirData = ByteUtils.toUTF8Bytes(languageDir);
 		int languageDirDataLen = languageDirData.length;
 		byte[] officeFilePathData = ByteUtils.toUTF8Bytes(srcFilePath);
 		int officeFilePathDataLen = officeFilePathData.length;
-		byte[] pdfFilePathData = ByteUtils.toUTF8Bytes(pdfFilePath);
-		int pdfFilePathDataLen = pdfFilePathData.length;
 		byte[] swfDirData = ByteUtils.toUTF8Bytes(swfDir);
 		int swfDirDataLen = swfDirData.length;
 		byte[] swfFileNameData = ByteUtils.toUTF8Bytes(swfFileName);
 		int swfFileNameDataLen = swfFileNameData.length;
+		byte[] pagingData = paging ? ByteUtils.toBigEndian(1) : ByteUtils
+				.toBigEndian(0);
+		int pagingDataLen = pagingData.length;
 
 		int totalBytes = swftoolsFilePathDataLen + languageDirDataLen
-				+ officeFilePathDataLen + pdfFilePathDataLen + swfDirDataLen
-				+ swfFileNameDataLen + 5;
+				+ officeFilePathDataLen + swfDirDataLen + swfFileNameDataLen
+				+ pagingDataLen + 5;
 		byte[] data = new byte[totalBytes];
 		int offset = 0;
 		// swf tools file path
@@ -143,11 +165,6 @@ public class SwfConvertClient {
 		offset += officeFilePathDataLen;
 		data[offset++] = '\0';
 
-		// pdf file path
-		System.arraycopy(pdfFilePathData, 0, data, offset, pdfFilePathDataLen);
-		offset += pdfFilePathDataLen;
-		data[offset++] = '\0';
-
 		// swf dir
 		System.arraycopy(swfDirData, 0, data, offset, swfDirDataLen);
 		offset += swfDirDataLen;
@@ -155,6 +172,11 @@ public class SwfConvertClient {
 
 		// swf file name
 		System.arraycopy(swfFileNameData, 0, data, offset, swfFileNameDataLen);
+		offset += swfFileNameDataLen;
+		data[offset++] = '\0';
+
+		// paging
+		System.arraycopy(pagingData, 0, data, offset, pagingDataLen);
 
 		if (cfg != null) {// open office
 			byte[] hostData = ByteUtils.toUTF8Bytes(cfg.host);
@@ -162,8 +184,8 @@ public class SwfConvertClient {
 			byte[] portData = ByteUtils.toBigEndian(cfg.port);
 			int portDataLen = portData.length;
 
-			byte[] oo = new byte[totalBytes + hostDataLen + portDataLen + 1];
-			offset += swfFileNameDataLen;
+			byte[] oo = new byte[totalBytes + hostDataLen + portDataLen + 2];
+			offset += pagingDataLen;
 			data[offset++] = '\0';
 
 			System.arraycopy(data, 0, oo, 0, data.length);
@@ -198,19 +220,18 @@ public class SwfConvertClient {
 	 *            语言支持文件目录，比如c:\swftools\xpdf\
 	 * @param officeFilePath
 	 *            office文件路径
-	 * @param pdfFilePath
-	 *            PDF文件路径
 	 * @param swfDir
 	 *            swf文件存储目录
 	 * @param swfFileName
 	 *            swf文件名
+	 * @param paging
+	 *            是否分页
 	 */
-	public void convertOffice2Swf_openoffice(String host, int port,
+	public void office2Swf_openoffice(String host, int port,
 			String swftoolsFilePath, String languageDir, String officeFilePath,
-			String pdfFilePath, String swfDir, String swfFileName) {
-		convertOffice2Swf(swftoolsFilePath, languageDir, officeFilePath,
-				pdfFilePath, swfDir, swfFileName, new OpenOfficeConfig(host,
-						port));
+			String swfDir, String swfFileName, boolean paging) {
+		office2Swf(swftoolsFilePath, languageDir, officeFilePath, swfDir,
+				swfFileName, paging, new OpenOfficeConfig(host, port));
 	}
 
 	/**
@@ -221,18 +242,18 @@ public class SwfConvertClient {
 	 *            语言支持文件目录，比如c:\swftools\xpdf\
 	 * @param officeFilePath
 	 *            office文件路径
-	 * @param pdfFilePath
-	 *            PDF文件路径
 	 * @param swfDir
 	 *            swf文件存储目录
 	 * @param swfFileName
 	 *            swf文件名
+	 * @param paging
+	 *            是否分页
 	 */
-	public void convertOffice2Swf_jacob(String swftoolsFilePath,
-			String languageDir, String officeFilePath, String pdfFilePath,
-			String swfDir, String swfFileName) {
-		convertOffice2Swf(swftoolsFilePath, languageDir, officeFilePath,
-				pdfFilePath, swfDir, swfFileName, null);
+	public void office2Swf_jacob(String swftoolsFilePath, String languageDir,
+			String officeFilePath, String swfDir, String swfFileName,
+			boolean paging) {
+		office2Swf(swftoolsFilePath, languageDir, officeFilePath, swfDir,
+				swfFileName, paging, null);
 	}
 
 	public void shutdown() throws IllegalStateException {

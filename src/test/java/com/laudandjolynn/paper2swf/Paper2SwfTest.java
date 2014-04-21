@@ -19,5 +19,13 @@ import junit.framework.TestCase;
  * @copyright: www.laudandjolynn.com
  */
 public class Paper2SwfTest extends TestCase {
-
+	public void testOffice2Swf() {
+		String swftoolsFilePath = "D:\\SWFTools";
+		String languageDir = "D:\\SWFTools\\xpdf";
+		String swfDir = Pdf2SwfTest.class.getResource("/").getPath();
+		String srcFilePath = Pdf2SwfTest.class
+				.getResource("/TestConverter.wps").getPath();
+		assertEquals(1, Paper2Swf.office2swf_jacob(swftoolsFilePath,
+				languageDir, srcFilePath, swfDir, "TestConverter.pdf", false));
+	}
 }

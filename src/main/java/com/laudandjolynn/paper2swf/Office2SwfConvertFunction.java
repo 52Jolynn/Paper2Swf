@@ -35,20 +35,22 @@ public class Office2SwfConvertFunction extends AbstractGearmanFunction {
 		String swftoolsFilePath = params[index++];
 		String languageDir = params[index++];
 		String officeFilePath = params[index++];
-		String pdfFilePath = params[index++];
 		String swfDir = params[index++];
 		String swfFileName = params[index++];
+		int paging = ByteUtils.fromBigEndian(params[index++].getBytes());
+
 		int r = -1;
 		if (params.length > index) {
 			String host = params[index++];
 			int port = ByteUtils.fromBigEndian(ByteUtils
 					.toUTF8Bytes(params[index]));
 			r = Paper2Swf.office2swf_openoffice(host, port, swftoolsFilePath,
-					languageDir, officeFilePath, pdfFilePath, swfDir,
-					swfFileName);
+					languageDir, officeFilePath, swfDir, swfFileName,
+					paging == 1 ? true : false);
 		} else {
 			r = Paper2Swf.office2swf_jacob(swftoolsFilePath, languageDir,
-					officeFilePath, pdfFilePath, swfDir, swfFileName);
+					officeFilePath, swfDir, swfFileName, paging == 1 ? true
+							: false);
 		}
 		if (r == -1) {
 			logger.error("convert pdf to swf fail.");

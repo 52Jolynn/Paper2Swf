@@ -29,6 +29,13 @@ public class SwfConvertWorkerRunner {
 	private GearmanJobServerConnection conn = null;
 	private List<Class<GearmanFunction>> functions = new ArrayList<Class<GearmanFunction>>();
 
+	/**
+	 * 
+	 * @param host
+	 *            job server服务地址
+	 * @param port
+	 *            job server服务端口
+	 */
 	public SwfConvertWorkerRunner(String host, int port) {
 		GearmanNIOJobServerConnectionFactory factory = new GearmanNIOJobServerConnectionFactory();
 		conn = factory.createConnection(host, port);

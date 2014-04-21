@@ -26,5 +26,5 @@ public interface PdfConverter {
 	 *            目标文件
 	 * @return 返回0表示转换失败，1表示成功
 	 */
-	public int convert(String srcFilePath, String destFilePath);
+	public int office2Pdf(String srcFilePath, String destFilePath);
 }

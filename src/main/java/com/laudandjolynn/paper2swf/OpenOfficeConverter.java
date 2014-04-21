@@ -64,7 +64,7 @@ public class OpenOfficeConverter implements PdfConverter {
 	}
 
 	@Override
-	public int convert(String srcFilePath, String destFilePath) {
+	public int office2Pdf(String srcFilePath, String destFilePath) {
 		SocketOpenOfficeConnection conn = null;
 		try {
 			conn = gop.borrowObject();

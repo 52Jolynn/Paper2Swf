@@ -20,6 +20,15 @@ import junit.framework.TestCase;
  */
 public class Pdf2SwfTest extends TestCase {
 	public void testPdf2Swf() {
-		
+		String swftoolsFilePath = "D:\\SWFTools";
+		String languageDir = "D:\\SWFTools\\xpdf";
+		SwfConverter converter = new SwfConverter(swftoolsFilePath, languageDir);
+		String pdfFilePath = Pdf2SwfTest.class
+				.getResource("/TestConverter.pdf").getPath();
+		String swfDir = Pdf2SwfTest.class.getResource("/").getPath();
+		assertEquals(1, converter.pdf2Swf(pdfFilePath, swfDir,
+				"TestConverter.swf", false));
+		assertEquals(2, converter.pdf2Swf(pdfFilePath, swfDir,
+				"TestConverter.swf", true));
 	}
 }

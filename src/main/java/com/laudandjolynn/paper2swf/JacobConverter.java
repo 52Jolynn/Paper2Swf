@@ -55,7 +55,7 @@ public class JacobConverter implements PdfConverter {
 	}
 
 	@Override
-	public int convert(String srcFilePath, String destFilePath) {
+	public int office2Pdf(String srcFilePath, String destFilePath) {
 		int index = srcFilePath.lastIndexOf(".");
 		if (index == -1) {
 			logger.error("source file must contain file extension.");

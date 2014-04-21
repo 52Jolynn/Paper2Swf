@@ -31,15 +31,16 @@ public class Pdf2SwfConvertFunction extends AbstractGearmanFunction {
 		String data = ByteUtils.fromUTF8Bytes((byte[]) this.data);
 		String[] params = data.split("\0");
 
-		int indxe = 0;
-		String swftoolsFilePath = params[indxe++];
-		String languageDir = params[indxe++];
-		String pdfFilePath = params[indxe++];
-		String swfDir = params[indxe++];
-		String swfFileName = params[indxe];
+		int index = 0;
+		String swftoolsFilePath = params[index++];
+		String languageDir = params[index++];
+		String pdfFilePath = params[index++];
+		String swfDir = params[index++];
+		String swfFileName = params[index++];
+		int paging = ByteUtils.fromBigEndian(params[index].getBytes());
 
 		int r = Paper2Swf.pdf2swf(swftoolsFilePath, languageDir, pdfFilePath,
-				swfDir, swfFileName);
+				swfDir, swfFileName, paging == 1 ? true : false);
 		if (r == -1) {
 			logger.error("convert pdf to swf fail.");
 		}
