@@ -49,7 +49,7 @@ public class Paper2Swf {
 	 *            是否分页
 	 * @return 返回生成的swf的页数，-1表示转换失败
 	 */
-	public static int pdf2swf(String swftoolsFilePath, String languageDir,
+	public static int pdf2Swf(String swftoolsFilePath, String languageDir,
 			String pdfFilePath, String swfDir, String swfFileName,
 			boolean paging) {
 		SwfConverter converter = new SwfConverter(swftoolsFilePath, languageDir);
@@ -71,7 +71,7 @@ public class Paper2Swf {
 	 *            是否分页
 	 * @return 返回生成的swf的页数，-1表示转换失败
 	 */
-	public static int office2swf_jacob(String swftoolsFilePath,
+	public static int office2Swf_jacob(String swftoolsFilePath,
 			String languageDir, String srcFilePath, String swfDir,
 			String swfFileName, boolean paging) {
 		PdfConverter pdfConverter = new JacobConverter();
@@ -81,7 +81,7 @@ public class Paper2Swf {
 		File pdfFile = new File(pdfFilePath);
 		try {
 			pdfConverter.office2Pdf(srcFilePath, pdfFilePath);
-			return pdf2swf(swftoolsFilePath, languageDir, pdfFilePath, swfDir,
+			return pdf2Swf(swftoolsFilePath, languageDir, pdfFilePath, swfDir,
 					swfFileName, paging);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -112,7 +112,7 @@ public class Paper2Swf {
 	 *            是否分页
 	 * @return 返回生成的swf的页数，-1表示转换失败
 	 */
-	public static int office2swf_openoffice(String host, int port,
+	public static int office2Swf_openoffice(String host, int port,
 			String swftoolsFilePath, String languageDir, String officeFilePath,
 			String swfDir, String swfFileName, boolean paging) {
 		PdfConverter pdfConverter = new OpenOfficeConverter(host, port);
@@ -122,7 +122,7 @@ public class Paper2Swf {
 		File pdfFile = new File(pdfFilePath);
 		try {
 			pdfConverter.office2Pdf(officeFilePath, pdfFilePath);
-			return pdf2swf(swftoolsFilePath, languageDir, pdfFilePath, swfDir,
+			return pdf2Swf(swftoolsFilePath, languageDir, pdfFilePath, swfDir,
 					swfFileName, paging);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

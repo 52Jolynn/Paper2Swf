@@ -25,7 +25,7 @@ public class Paper2SwfTest extends TestCase {
 		String swfDir = Pdf2SwfTest.class.getResource("/").getPath();
 		String srcFilePath = Pdf2SwfTest.class
 				.getResource("/TestConverter.wps").getPath();
-		assertEquals(1, Paper2Swf.office2swf_jacob(swftoolsFilePath,
+		assertEquals(1, Paper2Swf.office2Swf_jacob(swftoolsFilePath,
 				languageDir, srcFilePath, swfDir, "TestConverter.pdf", false));
 	}
 }

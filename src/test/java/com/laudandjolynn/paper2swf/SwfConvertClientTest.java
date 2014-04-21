@@ -10,7 +10,7 @@ import junit.framework.TestCase;
  */
 public class SwfConvertClientTest extends TestCase {
 	private final static String HOST = "192.168.1.241";
-	private final static int PORT = 4370;
+	private final static int PORT = 4730;
 
 	public void testPdf2Swf() {
 		SwfConvertClient client = new SwfConvertClient(HOST, PORT);

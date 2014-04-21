@@ -11,10 +11,13 @@
 package com.laudandjolynn.paper2swf;
 
 import org.gearman.client.GearmanJobResult;
+import org.gearman.client.GearmanJobResultImpl;
 import org.gearman.util.ByteUtils;
 import org.gearman.worker.AbstractGearmanFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.laudandjolynn.paper2swf.utils.ConvertException;
 
 /**
  * @author: Laud
@@ -37,24 +40,25 @@ public class Office2SwfConvertFunction extends AbstractGearmanFunction {
 		String officeFilePath = params[index++];
 		String swfDir = params[index++];
 		String swfFileName = params[index++];
-		int paging = ByteUtils.fromBigEndian(params[index++].getBytes());
+		boolean paging = params[index++].equals("true") ? true : false;
 
 		int r = -1;
 		if (params.length > index) {
 			String host = params[index++];
 			int port = ByteUtils.fromBigEndian(ByteUtils
 					.toUTF8Bytes(params[index]));
-			r = Paper2Swf.office2swf_openoffice(host, port, swftoolsFilePath,
-					languageDir, officeFilePath, swfDir, swfFileName,
-					paging == 1 ? true : false);
+			r = Paper2Swf.office2Swf_openoffice(host, port, swftoolsFilePath,
+					languageDir, officeFilePath, swfDir, swfFileName, paging);
 		} else {
-			r = Paper2Swf.office2swf_jacob(swftoolsFilePath, languageDir,
-					officeFilePath, swfDir, swfFileName, paging == 1 ? true
-							: false);
+			r = Paper2Swf.office2Swf_jacob(swftoolsFilePath, languageDir,
+					officeFilePath, swfDir, swfFileName, paging);
 		}
 		if (r == -1) {
-			logger.error("convert pdf to swf fail.");
+			logger.error("convert office to swf fail.");
+			throw new ConvertException("convert office to swf fail");
 		}
-		return null;
+		GearmanJobResult result = new GearmanJobResultImpl(
+				ByteUtils.toBigEndian(r));
+		return result;
 	}
 }

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gearman.common.GearmanJobServerConnection;
-import org.gearman.common.GearmanNIOJobServerConnectionFactory;
+import org.gearman.common.GearmanNIOJobServerConnection;
 import org.gearman.worker.GearmanFunction;
 import org.gearman.worker.GearmanWorker;
 import org.gearman.worker.GearmanWorkerImpl;
@@ -25,7 +25,7 @@ import org.gearman.worker.GearmanWorkerImpl;
  * @date: 2014年4月2日 下午10:37:52
  * @copyright: www.laudandjolynn.com
  */
-public class SwfConvertWorkerRunner {
+public class WorkerRunner {
 	private GearmanJobServerConnection conn = null;
 	private List<Class<GearmanFunction>> functions = new ArrayList<Class<GearmanFunction>>();
 
@@ -36,9 +36,8 @@ public class SwfConvertWorkerRunner {
 	 * @param port
 	 *            job server服务端口
 	 */
-	public SwfConvertWorkerRunner(String host, int port) {
-		GearmanNIOJobServerConnectionFactory factory = new GearmanNIOJobServerConnectionFactory();
-		conn = factory.createConnection(host, port);
+	public WorkerRunner(String host, int port) {
+		conn = new GearmanNIOJobServerConnection(host, port);
 	}
 
 	public void addFunction(Class<GearmanFunction> function) {

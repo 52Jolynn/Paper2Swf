@@ -10,13 +10,20 @@
  ******************************************************************************/
 package com.laudandjolynn.paper2swf;
 
+import java.io.IOException;
+
 import org.gearman.client.GearmanClient;
 import org.gearman.client.GearmanClientImpl;
 import org.gearman.client.GearmanJob;
 import org.gearman.client.GearmanJobImpl;
+import org.gearman.client.GearmanJobStatus;
 import org.gearman.common.GearmanJobServerConnection;
 import org.gearman.common.GearmanNIOJobServerConnection;
 import org.gearman.util.ByteUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.laudandjolynn.paper2swf.utils.OpenOfficeConfig;
 
 /**
  * @author: Laud
@@ -25,8 +32,15 @@ import org.gearman.util.ByteUtils;
  * @copyright: www.laudandjolynn.com
  */
 public class SwfConvertClient {
+	private final static Logger logger = LoggerFactory
+			.getLogger(SwfConvertClient.class);
 	private GearmanClient client;
 
+	/**
+	 * 
+	 * @param conn
+	 *            job server连接对象
+	 */
 	public SwfConvertClient(GearmanJobServerConnection conn) {
 		client = new GearmanClientImpl();
 		client.addJobServer(conn);
@@ -71,8 +85,7 @@ public class SwfConvertClient {
 		int swfDirDataLen = swfDirData.length;
 		byte[] swfFileNameData = ByteUtils.toUTF8Bytes(swfFileName);
 		int swfFileNameDataLen = swfFileNameData.length;
-		byte[] pagingData = paging ? ByteUtils.toBigEndian(1) : ByteUtils
-				.toBigEndian(0);
+		byte[] pagingData = paging ? "true".getBytes() : "false".getBytes();
 		int pagingDataLen = pagingData.length;
 
 		int totalBytes = swftoolsFilePathDataLen + languageDirDataLen
@@ -114,15 +127,14 @@ public class SwfConvertClient {
 		GearmanJob job = GearmanJobImpl.createBackgroundJob(function, data,
 				uniqueId);
 		client.submit(job);
-	}
 
-	private class OpenOfficeConfig {
-		private String host;
-		private int port;
-
-		public OpenOfficeConfig(String host, int port) {
-			this.host = host;
-			this.port = port;
+		try {
+			GearmanJobStatus status = client.getJobStatus(job);
+			logger.info("job status: " + status);
+		} catch (IllegalStateException e) {
+			logger.error(e.getMessage(), e);
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -139,8 +151,7 @@ public class SwfConvertClient {
 		int swfDirDataLen = swfDirData.length;
 		byte[] swfFileNameData = ByteUtils.toUTF8Bytes(swfFileName);
 		int swfFileNameDataLen = swfFileNameData.length;
-		byte[] pagingData = paging ? ByteUtils.toBigEndian(1) : ByteUtils
-				.toBigEndian(0);
+		byte[] pagingData = paging ? "true".getBytes() : "false".getBytes();
 		int pagingDataLen = pagingData.length;
 
 		int totalBytes = swftoolsFilePathDataLen + languageDirDataLen
@@ -179,9 +190,9 @@ public class SwfConvertClient {
 		System.arraycopy(pagingData, 0, data, offset, pagingDataLen);
 
 		if (cfg != null) {// open office
-			byte[] hostData = ByteUtils.toUTF8Bytes(cfg.host);
+			byte[] hostData = ByteUtils.toUTF8Bytes(cfg.getHost());
 			int hostDataLen = hostData.length;
-			byte[] portData = ByteUtils.toBigEndian(cfg.port);
+			byte[] portData = ByteUtils.toBigEndian(cfg.getPort());
 			int portDataLen = portData.length;
 
 			byte[] oo = new byte[totalBytes + hostDataLen + portDataLen + 2];
@@ -206,6 +217,15 @@ public class SwfConvertClient {
 		GearmanJob job = GearmanJobImpl.createBackgroundJob(function, data,
 				uniqueId);
 		client.submit(job);
+
+		try {
+			GearmanJobStatus status = client.getJobStatus(job);
+			logger.info("job status: " + status);
+		} catch (IllegalStateException e) {
+			logger.error(e.getMessage(), e);
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	/**

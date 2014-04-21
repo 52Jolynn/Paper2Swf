@@ -11,10 +11,13 @@
 package com.laudandjolynn.paper2swf;
 
 import org.gearman.client.GearmanJobResult;
+import org.gearman.client.GearmanJobResultImpl;
 import org.gearman.util.ByteUtils;
 import org.gearman.worker.AbstractGearmanFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.laudandjolynn.paper2swf.utils.ConvertException;
 
 /**
  * @author: Laud
@@ -37,14 +40,17 @@ public class Pdf2SwfConvertFunction extends AbstractGearmanFunction {
 		String pdfFilePath = params[index++];
 		String swfDir = params[index++];
 		String swfFileName = params[index++];
-		int paging = ByteUtils.fromBigEndian(params[index].getBytes());
+		boolean paging = params[index].equals("true") ? true : false;
 
-		int r = Paper2Swf.pdf2swf(swftoolsFilePath, languageDir, pdfFilePath,
-				swfDir, swfFileName, paging == 1 ? true : false);
+		int r = Paper2Swf.pdf2Swf(swftoolsFilePath, languageDir, pdfFilePath,
+				swfDir, swfFileName, paging);
 		if (r == -1) {
 			logger.error("convert pdf to swf fail.");
+			throw new ConvertException("convert pdf to swf fail");
 		}
-		return null;
-	}
 
+		GearmanJobResult result = new GearmanJobResultImpl(
+				ByteUtils.toBigEndian(r));
+		return result;
+	}
 }

@@ -8,19 +8,26 @@ import org.gearman.worker.GearmanFunction;
  * @date: 2014年4月21日 上午11:46:52
  * @copyright: www.laudandjolynn.com
  */
-public class SwfConvertWorkerTest {
+public class WorkerTest {
 	private final static String HOST = "192.168.1.241";
-	private final static int PORT = 4370;
+	private final static int PORT = 4730;
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
-		SwfConvertWorkerRunner worker = new SwfConvertWorkerRunner(HOST, PORT);
+		WorkerRunner worker = new WorkerRunner(HOST, PORT);
 		try {
-			Class<?> c = Class.forName(Pdf2SwfConvertFunction.class.getName());
+			Class<?> c = Class.forName(Pdf2SwfConvertFunction.class
+					.getCanonicalName());
 			if (GearmanFunction.class.isAssignableFrom(c)) {
 				worker.addFunction((Class<GearmanFunction>) c);
 			}
-			c = Class.forName(Office2SwfConvertFunction.class.getName());
+			c = Class.forName(Office2SwfConvertFunction.class
+					.getCanonicalName());
+			if (GearmanFunction.class.isAssignableFrom(c)) {
+				worker.addFunction((Class<GearmanFunction>) c);
+			}
+			c = Class.forName(Office2PdfConvertFunction.class
+					.getCanonicalName());
 			if (GearmanFunction.class.isAssignableFrom(c)) {
 				worker.addFunction((Class<GearmanFunction>) c);
 			}
