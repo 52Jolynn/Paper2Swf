@@ -31,3 +31,6 @@ Office文档转pdf的实现方式有两种，一是使用com bridge，使用开�
 <li>若需要更好地支持异步转换，需要部署gearman</li>
 </ul>
 
+<h2>Start OpenOffice as service</h2>
+soffice -headless -accept="socket,host=127.0.0.1,port=8100;urp;" -nofirststartwizard
+<p>see also: http://www.artofsolving.com/node/10</p>
