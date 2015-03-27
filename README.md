@@ -31,6 +31,11 @@ Office文档转pdf的实现方式有两种，一是使用com bridge，使用开�
 <li>若需要更好地支持异步转换，需要部署gearman</li>
 </ul>
 
+<h2>存在问题</h2>
+<ul>
+<li>使用OO转换大文件性能不理想，100MB doc文档大概需要5分钟时间（x86，i5-2.6GHz，8G，win7），使用com bridge快很多</li>
+</ul>
+
 <h2>Start OpenOffice as service</h2>
 soffice -headless -accept="socket,host=127.0.0.1,port=8100;urp;" -nofirststartwizard
 <p>see also: http://www.artofsolving.com/node/10</p>
